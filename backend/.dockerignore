@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+.git
+.gitignore
+.env
+# Add any other files or folders that should not be included in the Docker image
+# For example, local development config files, test files if not needed in production.
+README.md

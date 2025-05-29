@@ -1,252 +1,162 @@
-# E-Commerce Website Specification
+# Full-Stack E-Commerce Platform
 
-## Project Overview
-This document outlines the specifications for developing a full-featured e-commerce website. The platform will allow users to browse products, create accounts, manage shopping carts, complete purchases, and track orders.
+This project is a comprehensive e-commerce platform featuring a React/TypeScript frontend and a Node.js/Express/MongoDB backend. It includes user authentication, product catalog, shopping cart functionality, and more.
+
+## Table of Contents
+
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [Local Development](#local-development)
+  - [Dockerized Setup](#dockerized-setup)
+- [Backend Details](#backend-details)
+- [Frontend Details](#frontend-details)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Project Structure
+
+The project is organized into two main directories:
+
+-   `frontend/`: Contains the React/TypeScript client application.
+-   `backend/`: Contains the Node.js/Express server application.
+
+Each directory has its own README with specific setup and run instructions.
+
+## Features
+
+-   User Authentication (Registration, Login with JWT)
+-   Product Catalog (List and Detail Views)
+-   Shopping Cart Functionality (Add, Update, Remove, View Cart)
+-   Dockerized environment for consistent development and deployment.
+-   GitHub Actions for Continuous Integration (Linting, Building).
+-   (Future features: Order Management, Payments, Admin Panel, etc.)
 
 ## Tech Stack
 
-### Frontend
-- **Framework**: React.js with TypeScript
-- **State Management**: Redux Toolkit
-- **Styling**: Tailwind CSS
-- **UI Components**: Custom components with accessibility support
-- **Forms**: React Hook Form with Zod validation
-- **API Consumption**: React Query
+**Frontend:**
 
-### Backend
-- **Framework**: Node.js with Express or NestJS
-- **Database**: MongoDB with Mongoose or PostgreSQL with Prisma
-- **Authentication**: JWT with refresh token rotation
-- **Payment Processing**: Stripe API integration
-- **Email Service**: SendGrid or Amazon SES
-- **File Storage**: AWS S3 or equivalent
-- **Search**: Elasticsearch or MongoDB Atlas Search
+-   React.js (with Create React App)
+-   TypeScript
+-   Redux Toolkit (for global state management like auth)
+-   React Query (for server state management - fetching products, cart)
+-   Tailwind CSS (for styling)
+-   React Hook Form & Zod (for form handling and validation)
+-   React Router DOM (for navigation)
 
-### DevOps
-- **Containerization**: Docker
-- **CI/CD**: GitHub Actions
-- **Hosting**: AWS, Azure, or Vercel/Netlify for frontend
-- **Monitoring**: Sentry for error tracking
-- **Analytics**: Google Analytics or Plausible
+**Backend:**
 
-## Core Features
+-   Node.js
+-   Express.js (web framework)
+-   MongoDB (database with Mongoose ODM)
+-   JSON Web Tokens (JWT) (for authentication)
+-   `bcryptjs` (for password hashing)
+-   `slugify` (for generating product slugs)
+-   `cors`, `dotenv`
 
-### 1. User Authentication & Authorization
-- User registration and login with email/password
-- Social authentication (Google, Facebook)
-- Password reset functionality
-- Role-based access control (Customer, Admin)
-- Account management dashboard
+**DevOps & Tooling:**
 
-### 2. Product Catalog
-- Product categories and subcategories
-- Product listings with filtering and sorting
-- Product details page with:
-  - Multiple images
-  - Detailed descriptions
-  - Specifications
-  - Pricing information
-  - Availability status
-  - Related products
-- Search functionality with autocomplete
-- Product reviews and ratings
+-   Docker & Docker Compose
+-   GitHub Actions (CI)
+-   ESLint (for linting)
+-   Nginx (for serving frontend build)
 
-### 3. Shopping Cart
-- Add/remove products
-- Update quantities
-- Save for later functionality
-- Cart persistence (logged in and guest users)
-- Price calculations with tax and shipping estimates
+## Prerequisites
 
-### 4. Checkout Process
-- Multi-step checkout flow
-- Address management
-- Multiple shipping options
-- Order summary
-- Coupon/discount code support
-- Multiple payment methods:
-  - Credit/debit cards
-  - PayPal
-  - Apple Pay/Google Pay
+-   Node.js (v18.x or later recommended for both frontend and backend)
+-   npm (usually comes with Node.js)
+-   Docker Desktop (or Docker engine and Docker Compose CLI)
+-   MongoDB (a local instance, a cloud-hosted instance like MongoDB Atlas, or run via Docker Compose as configured)
+-   Git
 
-### 5. Order Management
-- Order confirmation
-- Order history
-- Order status tracking
-- Order cancellation
-- Returns and refunds processing
+## Getting Started
 
-### 6. Admin Panel
-- Dashboard with sales analytics
-- Product management (CRUD operations)
-- Order management
-- Customer management
-- Content management for static pages
-- Promotions and discount management
-- Inventory management
+### Local Development (Without Docker)
 
-## Technical Requirements
+1.  **Clone the Repository:**
+    ```bash
+    git clone <your-repository-url>
+    cd <your-repository-name>
+    ```
 
-### Performance
-- Page load time < 2 seconds
-- First Contentful Paint < 1 second
-- Time to Interactive < 3 seconds
-- Server response time < 200ms
+2.  **Set up Backend:**
+    -   Navigate to the backend directory: `cd backend`
+    -   Follow the instructions in `backend/README.md`.
 
-### Security
-- HTTPS implementation
-- Input validation on all forms
-- Protection against common vulnerabilities (XSS, CSRF, SQL Injection)
-- Secure payment processing (PCI compliance)
-- Regular security audits
-- Data encryption in transit and at rest
+3.  **Set up Frontend:**
+    -   Navigate to the frontend directory: `cd frontend` (from root)
+    -   Follow the instructions in `frontend/README.md`.
 
-### Scalability
-- Horizontal scaling capability
-- Caching strategies
-- Database indexing and optimization
-- Content Delivery Network (CDN) integration
+4.  **Ensure your local MongoDB instance is running and accessible as per your backend `.env` configuration.**
 
-### Accessibility
-- WCAG 2.1 AA compliance
-- Semantic HTML
-- Keyboard navigation
-- Screen reader compatibility
-- Proper color contrast
+### Dockerized Setup (Recommended for easy multi-service management)
 
-### SEO
-- Server-side rendering or static generation for core pages
-- Structured data markup
-- Canonical URLs
-- XML sitemap
-- Meta tags optimization
-- SEO-friendly URLs
+This setup uses Docker Compose to run the frontend, backend, and a MongoDB database instance.
 
-## Implementation Guidelines
+1.  **Clone the Repository:**
+    ```bash
+    git clone <your-repository-url>
+    cd <your-repository-name>
+    ```
 
-### Code Structure
-- Feature-based architecture
-- Clean separation of concerns
-- Consistent naming conventions
-- Comprehensive test coverage
-- Documentation with JSDoc
+2.  **Environment Variables for Backend:**
+    *   The `docker-compose.yml` file references environment variables for the backend service. For sensitive data like `JWT_SECRET` in a real scenario, you would use Docker secrets or a `.env` file that `docker-compose.yml` can read (though `.env` files are gitignored, so you'd need to create it).
+    *   For local Docker Compose development, the provided `docker-compose.yml` has some defaults. You can customize `MONGODB_URI`, `JWT_SECRET` etc., directly in the `docker-compose.yml` for the backend service's `environment` section if needed, or modify it to use an env_file.
+    *   Ensure the `MONGODB_URI` in `docker-compose.yml` points to the `mongo` service: `mongodb://mongo:27017/ecommerceDB`.
 
-### API Design
-- RESTful API endpoints with versioning
-- GraphQL API (optional)
-- Comprehensive error handling
-- Rate limiting
-- Response caching
+3.  **Environment Variables for Frontend (Build Time):**
+    *   If your frontend requires build-time environment variables (like `REACT_APP_API_URL`), you can pass them as build arguments in the `docker-compose.yml` under the `frontend` service's `build` section.
+    *   Example:
+        ```yaml
+        frontend:
+          build:
+            context: ./frontend
+            args:
+              REACT_APP_API_URL: http://localhost:5000/api # Adjust if your setup differs
+        ```
+    *   Note: The current frontend is built to call `http://localhost:5000/api`. When running via Docker Compose, `localhost` from the browser's perspective correctly maps to your host machine, and Docker Compose maps port 5000 on your host to the backend container.
 
-### Data Models
+4.  **Build and Run with Docker Compose:**
+    From the project root directory:
+    ```bash
+    docker-compose up --build -d
+    ```
+    This command will:
+    -   Build the Docker images for the frontend and backend (if they don't exist or if `--build` is specified).
+    -   Start containers for frontend, backend, and MongoDB in detached mode (`-d`).
+    -   The frontend should be accessible at `http://localhost:3000`.
+    -   The backend API should be accessible at `http://localhost:5000`.
 
-#### User
-```typescript
-interface User {
-  id: string;
-  email: string;
-  passwordHash: string;
-  firstName: string;
-  lastName: string;
-  role: "customer" | "admin";
-  addresses: Address[];
-  paymentMethods: PaymentMethod[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
+5.  **To Stop Services:**
+    ```bash
+    docker-compose down
+    ```
+    To remove volumes (like MongoDB data):
+    ```bash
+    docker-compose down -v
+    ```
 
-#### Product
-```typescript
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  salePrice?: number;
-  images: string[];
-  categories: Category[];
-  attributes: Record<string, string>;
-  inventory: number;
-  isPublished: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
+6.  **To View Logs:**
+    ```bash
+    docker-compose logs -f           # All services
+    docker-compose logs -f frontend  # Specific service
+    docker-compose logs -f backend
+    ```
 
-#### Order
-```typescript
-interface Order {
-  id: string;
-  userId: string;
-  items: OrderItem[];
-  shippingAddress: Address;
-  billingAddress: Address;
-  paymentMethod: string;
-  paymentStatus: "pending" | "paid" | "failed";
-  fulfillmentStatus: "processing" | "shipped" | "delivered" | "canceled";
-  subtotal: number;
-  tax: number;
-  shipping: number;
-  discount: number;
-  total: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
+## Backend Details
 
-## Development Phases
+For specific instructions on setting up, running, and understanding the backend, please see `backend/README.md`.
 
-### Phase 1: Foundation
-- Project setup and architecture
-- User authentication implementation
-- Basic product catalog
-- Simple cart functionality
+## Frontend Details
 
-### Phase 2: Core Features
-- Complete product catalog with filtering
-- Enhanced cart functionality
-- Checkout process
-- Basic order management
+For specific instructions on setting up, running, and understanding the frontend, please see `frontend/README.md`.
 
-### Phase 3: Advanced Features
-- Admin panel
-- User reviews and ratings
-- Wishlists
-- Advanced search
-- Recommendations
+## Contributing
 
-### Phase 4: Optimization
-- Performance optimization
-- SEO enhancements
-- Security hardening
-- Analytics integration
+Contributions are welcome! Please follow standard Git workflow: branch, commit, push, and create a Pull Request. (Further details on coding standards, testing, etc., can be added here).
 
-## Testing Strategy
-- Unit tests for business logic
-- Integration tests for API endpoints
-- End-to-end tests for critical flows
-- Performance testing
-- Security testing
+## License
 
-## Deployment Strategy
-- Containerization with Docker
-- CI/CD pipeline with GitHub Actions
-- Blue/green deployment
-- Automated backups
-- Monitoring and alerting
-
-## Documentation
-- API documentation with Swagger/OpenAPI
-- Frontend component documentation with Storybook
-- Comprehensive README
-- Setup and deployment guides
-- Contribution guidelines
-
-## Maintenance Plan
-- Regular security updates
-- Performance monitoring
-- Bug fixing process
-- Feature request handling
-- Scheduled backups
+This project is licensed under the MIT License - see the LICENSE file for details (if a LICENSE file is added).
