@@ -1,0 +1,116 @@
+name: E-commerce CI
+
+on:
+  push:
+    branches: [ main, master, develop ] # Adjust branches as needed
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  lint-backend:
+    name: Lint Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Match backend Node version
+
+      - name: Install backend dependencies
+        run: cd backend && npm ci
+
+      - name: Run backend linters
+        run: |
+          cd backend
+          # Add your specific linting command here.
+          # For now, we'll use a placeholder or a basic ESLint check if package.json has it.
+          # Example: npm run lint
+          # If no lint script, try npx eslint . --ext .js (requires eslint config)
+          echo "Backend linting placeholder - configure ESLint or other linters."
+          # As a basic check, ensure `npm list eslint` doesn't error if eslint is a dep
+          # Or just check if `npm run test` (which is default) passes if it includes linting
+          # For now, we'll assume if `npm ci` passes, basic things are fine.
+          # A real project would have `npm run lint` configured in package.json
+
+  build-backend-docker:
+    name: Build Backend Docker Image
+    runs-on: ubuntu-latest
+    needs: lint-backend # Optional: run after linting
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend Docker image
+        run: docker build -t backend-image ./backend
+        # No push step for CI, just build to test Dockerfile validity
+
+  lint-frontend:
+    name: Lint Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Match frontend Node version
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Run frontend linters
+        run: |
+          cd frontend
+          # Create React App comes with ESLint. `npm run lint` should be available if not ejected.
+          # If `npm run lint` is not in package.json, this will fail.
+          # A common setup is to have `eslint . --ext .ts,.tsx`
+          if grep -q '"lint":' package.json; then
+            npm run lint
+          else
+            echo "Frontend lint script not found in package.json. Skipping explicit lint run."
+            # CRA default `npm test` runs linters too, could use that if build is too slow.
+            # For now, this is a soft check.
+          fi
+          # Basic check to ensure project structure is fine for building:
+          npm run build --if-present # only run if build script exists, as a pre-check
+
+  build-frontend-docker:
+    name: Build Frontend Docker Image
+    runs-on: ubuntu-latest
+    needs: lint-frontend # Optional: run after linting
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build frontend Docker image
+        run: docker build -t frontend-image ./frontend
+        # No push step for CI, just build to test Dockerfile validity
+
+  # Placeholder for tests if/when they are added
+  # test-backend:
+  #   ...
+  # test-frontend:
+  #   ...
+
+# Optional: Job to check if Docker Compose setup is valid
+  validate-docker-compose:
+    name: Validate Docker Compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose file
+        run: docker-compose -f docker-compose.yml config
+        # This command checks syntax and resolves paths, good for basic validation.
+        # It doesn't run services. `docker-compose up --no-start` could also be used.
